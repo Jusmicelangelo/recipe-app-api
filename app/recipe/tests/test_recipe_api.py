@@ -27,13 +27,16 @@ from recipe.serializers import (
 
 RECIPES_URL = reverse('recipe:recipe-list')
 
+
 def detail_url(recipe_id):
     """Create and retunr a recipe detail URL."""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
+
 def image_upload_url(recipe_id):
-     """Create and return a recipe detail URL."""
-     return reverse('recipe:recipe-upload-image', args=[recipe_id])
+    """Create and return a recipe detail URL."""
+    return reverse('recipe:recipe-upload-image', args=[recipe_id])
+
 
 def create_recipe(user, **params):
     """Create and return a sample recipe."""
@@ -49,9 +52,11 @@ def create_recipe(user, **params):
     recipe = Recipe.objects.create(user=user, **defaults)
     return recipe
 
+
 def create_user(**params):
     """Create and return a new user."""
     return get_user_model().objects.create_user(**params)
+
 
 class PublicRecipeAPITests(TestCase):
     """Test unauthentificated API requests."""
@@ -64,6 +69,7 @@ class PublicRecipeAPITests(TestCase):
         res = self.client.get(RECIPES_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateRecipeAPITests(TestCase):
     """Test authenticated API requests."""
@@ -225,10 +231,10 @@ class PrivateRecipeAPITests(TestCase):
         """Test creating a recipe with existing tag"""
         tag_indian = Tag.objects.create(user=self.user, name='Indian')
         payload = {
-        'title': 'Pongal',
-        'time_minutes': 60,
-        'price': Decimal('4.50'),
-        'tags': [{'name': 'Indian'}, {'name': 'Breakfast'}]
+            'title': 'Pongal',
+            'time_minutes': 60,
+            'price': Decimal('4.50'),
+            'tags': [{'name': 'Indian'}, {'name': 'Breakfast'}]
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
@@ -288,10 +294,10 @@ class PrivateRecipeAPITests(TestCase):
     def test_create_recipe_with_new_ingredients(self):
         """Test creating a recipe with new ingredients"""
         payload = {
-        'title': 'Cauliflower Tacos',
-        'time_minutes': 60,
-        'price': Decimal('4.30'),
-        'ingredients': [{'name': 'Cauliflower'}, {'name': 'Salt'}],
+            'title': 'Cauliflower Tacos',
+            'time_minutes': 60,
+            'price': Decimal('4.30'),
+            'ingredients': [{'name': 'Cauliflower'}, {'name': 'Salt'}],
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
@@ -311,10 +317,10 @@ class PrivateRecipeAPITests(TestCase):
         """Test creating a new recipe with existing ingredient."""
         ingredient = Ingredient.objects.create(user=self.user, name='Lemon')
         payload = {
-        'title': 'Vietnamese Soup',
-        'time_minutes': 25,
-        'price': '2.55',
-        'ingredients': [{'name': 'Lemon'}, {'name': 'Fish Sauce'}]
+            'title': 'Vietnamese Soup',
+            'time_minutes': 25,
+            'price': '2.55',
+            'ingredients': [{'name': 'Lemon'}, {'name': 'Fish Sauce'}]
         }
         res = self.client.post(RECIPES_URL, payload, format='json')
 
