@@ -29,6 +29,7 @@ def create_user(email='user@example.com', password='testpass123'):
     """Create and return user."""
     return get_user_model().objects.create_user(email=email, password=password)
 
+
 class PublicIngredientApiTests(TestCase):
     """Test unauthenticated API requests."""
 
@@ -40,6 +41,7 @@ class PublicIngredientApiTests(TestCase):
         res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateIngredientApiTests(TestCase):
     """Test authenticated API requests."""

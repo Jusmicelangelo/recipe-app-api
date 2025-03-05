@@ -43,6 +43,7 @@ class PuplicTagsApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 class PrviateTagsApiTests(TestCase):
     """Test authenticated API requests."""
 
@@ -141,5 +142,3 @@ class PrviateTagsApiTests(TestCase):
         res = self.client.get(TAGS_URL, {'assigned_only': 1})
 
         self.assertEqual(len(res.data), 1)
-
-
