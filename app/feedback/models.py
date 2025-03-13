@@ -59,7 +59,7 @@ class FeedbackInvitation(models.Model):
     """Feedback Invitation Object."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     inviter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_invitations")
-    invitee_email = models.EmailField()
+    invitee_email = models.EmailField(unique=True)
     used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

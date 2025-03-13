@@ -10,6 +10,11 @@ class FeedbackInvitationSerializer(serializers.ModelSerializer):
         fields = ["id", "inviter", "invitee_email", "used", "created_at", "qr_code"]
         read_only_fields = ["id", "inviter", "used", "created_at", "qr_code"]
 
+    def validate_invitee_email(self, value):
+        if FeedbackInvitation.objects.filter(invitee_email=value).exists():
+            raise serializers.ValidationError("An invitation has already been sent to this email.")
+        return value
+
     def get_qr_code(self, obj):
         """Generating a QR code."""
         from .utils import generate_qr_code

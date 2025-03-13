@@ -20,6 +20,17 @@ class FeedbackInvitationViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        invitee_email = request.data.get("invitee_email")
+        inviter = request.user
+
+        # ✅ Prevent duplicate invites
+        if FeedbackInvitation.objects.filter(inviter=inviter, invitee_email=invitee_email).exists():
+            return Response({"error": "User has already been invited."}, status=status.HTTP_400_BAD_REQUEST)
+
+        invitation = FeedbackInvitation.objects.create(inviter=inviter, invitee_email=invitee_email)
+        return Response({"invite_id": invitation.id}, status=status.HTTP_201_CREATED)
+
     def perform_create(self, serializer):
         serializer.save(inviter=self.request.user)
 
