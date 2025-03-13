@@ -4,3 +4,5 @@ psycopg2>=2.8.6,<2.9 #connector between Python and PostgresSQL
 drf-spectacular>=0.15.1,<0.16 #for generating an APIschema with e.g swagger
 pillow>=8.2.0,<8.3.0 #for using images in django
 uwsgi>=2.0.19,<2.1 #for deploying django app
+qrcode>=8.0,<9.0 #for generating qr codes
+django-extensions>=3.2.1,<4.0 #for using show_url
