@@ -7,8 +7,9 @@ import json
 from core.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
+from django.urls import reverse
 from rest_framework import status
-from feedback.models import FeedbackInvitation, PersonalityTrait, TalentCategory, Talent, Feedback
+from feedback.models import FeedbackInvitation, PersonalityTrait, TalentCategory, Talent, Feedback, Quality
 
 class InvitationTestCase(TestCase):
     """Tests for generating QR Code and sending feedback invitation"""
@@ -78,9 +79,13 @@ class FeedbackTestCase(TestCase):
         self.user = User.objects.create_user(email='user@example.com', password="password123")
         self.client.force_authenticate(user=self.user)
 
+        # ✅ Create a Quality first
+        self.quality_creativity = Quality.objects.create(name="Creativity")
+        self.quality_leadership = Quality.objects.create(name="Leadership")
+
         # Create sample categories and talents
-        self.personality1 = PersonalityTrait.objects.create(name="Creative")
-        self.personality2 = PersonalityTrait.objects.create(name="Analytical")
+        self.personality1 = PersonalityTrait.objects.create(name="Creative", quality=self.quality_creativity)
+        self.personality2 = PersonalityTrait.objects.create(name="Analytical", quality=self.quality_creativity)
 
         self.talent_category1 = TalentCategory.objects.create(name="Technical Skills")
         self.talent_category2 = TalentCategory.objects.create(name="Soft Skills")
@@ -91,7 +96,10 @@ class FeedbackTestCase(TestCase):
         self.talent3 = Talent.objects.create(name="Public Speaking", category=self.talent_category2)
         self.talent4 = Talent.objects.create(name="Leadership", category=self.talent_category2)
 
-        print(f"Created Talent Category ID: {self.talent_category1.id}")  # ✅ Debugging output
+        # ✅ Create an Invitation (simulating a valid invite)
+        self.invite_id = uuid.uuid4()
+
+        # print(f"Created Talent Category ID: {self.talent_category1.id}")  # ✅ Debugging output
 
         # Create an invitation that has been used
         self.invitation = FeedbackInvitation.objects.create(
@@ -99,6 +107,18 @@ class FeedbackTestCase(TestCase):
             invitee_email="invitee@example.com",
             used=True  # Ensure invitation is already used for feedback submission
         )
+
+        # ✅ Base Feedback Data
+        self.valid_feedback_data = {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "feedback_type": "performance",
+            "qualities": [str(self.quality_creativity.id), str(self.quality_leadership.id)],
+            "personality_traits": [str(self.personality1.id), str(self.personality2.id)],
+            "talents": [str(self.talent1.id)],
+            "invite_id": str(self.invite_id),
+            "radar_chart": {"category1": 4, "category2": 4, "category3": 4, "category4": 2}  # ✅ Ensuring sum is 14
+        }
 
     def test_create_invitation(self):
         """
@@ -139,6 +159,21 @@ class FeedbackTestCase(TestCase):
         feedback = Feedback.objects.get(invitation=self.invitation)
         self.assertEqual(feedback.personality_traits.count(), 2)
         self.assertEqual(feedback.talents.count(), 2)
+
+    # def test_submit_feedback_with_only_qualities(self):
+    #     """Ensure feedback submission works when only qualities are provided (no traits)."""
+    #     data = self.valid_feedback_data.copy()
+    #     data["personality_traits"] = []
+    #       # ✅ Print the generated URL for debugging
+    #     url = reverse("submit-feedback", args=[self.invite_id])
+    #     print("Generated URL:", url)
+    #     response = self.client.post(reverse("submit-feedback", args=[self.invite_id]), data, format="json")
+    #       # ✅ Debugging: Print Response
+    #     print("Response:", response.status_code, response.data)
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #     feedback = Feedback.objects.first()
+    #     self.assertEqual(feedback.qualities.count(), 2)
+    #     self.assertEqual(feedback.personality_traits.count(), 0)
 
     def test_radar_chart_validation(self):
         """

@@ -3,11 +3,25 @@ from core.models import User
 from django.db import models
 
 
+# ✅ Quality model (Acts as a category for personality traits)
+class Quality(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+# ✅ Personality Trait model (Linked to a specific Quality)
 class PersonalityTrait(models.Model):
-    """
-    List of predefined personality categories -- HAS TO BE EXCERPTED TO SEPARATE APP.
-    """
-    name = models.CharField(max_length=50, unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, unique=True)
+    quality = models.ForeignKey(
+        "Quality",
+        on_delete=models.CASCADE,
+        related_name="traits",
+        to_field="id",
+        db_column="quality_id"
+    )
 
     def __str__(self):
         return self.name
