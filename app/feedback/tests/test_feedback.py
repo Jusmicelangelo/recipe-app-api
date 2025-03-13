@@ -261,63 +261,63 @@ class FeedbackTestCase(TestCase):
         print("Response Status Code:", response.status_code)  # ✅ Debugging
         print("Response Data:", response.data)  # ✅ Debugging
 
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # def test_invalid_talent_category_returns_404(self):
-    #     """
-    #     Ensure requesting a non-existing talent category returns 404.
-    #     """
-    #     fake_id = uuid.uuid4()
-    #     response = self.client.get(f"/api/feedback/talent_categories/{fake_id}/")
-    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_invalid_talent_category_returns_404(self):
+        """
+        Ensure requesting a non-existing talent category returns 404.
+        """
+        fake_id = uuid.uuid4()
+        response = self.client.get(f"/api/feedback/talent_categories/{fake_id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # def test_submit_feedback_with_talents(self):
-    #     """
-    #     Ensure feedback submission correctly links talents to feedback.
-    #     """
-    #     feedback_data = {
-    #         "name": "Alice",
-    #         "email": "alice@example.com",
-    #         "feedback_type": "quick",
-    #         "category_driving": 4,
-    #         "category_exploring": 4,
-    #         "category_understanding": 4,
-    #         "category_communicating": 4,  # Sum = 16
-    #         "personality_traits": [self.personality1.id, self.personality2.id],
-    #         "talents": [self.talent1.id, self.talent3.id]  # ✅ Selecting "Coding" & "Public Speaking"
-    #     }
+    def test_submit_feedback_with_talents(self):
+        """
+        Ensure feedback submission correctly links talents to feedback.
+        """
+        feedback_data = {
+            "name": "Alice",
+            "email": "alice@example.com",
+            "feedback_type": "quick",
+            "category_driving": 4,
+            "category_exploring": 4,
+            "category_understanding": 4,
+            "category_communicating": 2,  # Sum = 14
+            "personality_traits": [self.personality1.id, self.personality2.id],
+            "talents": [self.talent1.id, self.talent3.id]  # ✅ Selecting "Coding" & "Public Speaking"
+        }
 
-    #     response = self.client.post(f"/api/feedback/submit/{self.invitation.id}/", feedback_data)
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED, f"Unexpected Response: {response.data}")
+        response = self.client.post(f"/api/feedback/submit/{self.invitation.id}/", feedback_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, f"Unexpected Response: {response.data}")
 
-    #     # ✅ Ensure feedback was created
-    #     self.assertTrue(Feedback.objects.filter(invitation=self.invitation).exists(), "Feedback was not created")
+        # ✅ Ensure feedback was created
+        self.assertTrue(Feedback.objects.filter(invitation=self.invitation).exists(), "Feedback was not created")
 
-    #     # ✅ Check that talents were linked correctly
-    #     feedback = Feedback.objects.get(invitation=self.invitation)
-    #     self.assertEqual(feedback.talents.count(), 2)
-    #     self.assertTrue(feedback.talents.filter(name="Coding").exists())
-    #     self.assertTrue(feedback.talents.filter(name="Public Speaking").exists())
+        # ✅ Check that talents were linked correctly
+        feedback = Feedback.objects.get(invitation=self.invitation)
+        self.assertEqual(feedback.talents.count(), 2)
+        self.assertTrue(feedback.talents.filter(name="Coding").exists())
+        self.assertTrue(feedback.talents.filter(name="Public Speaking").exists())
 
-    # def test_submit_feedback_without_talents(self):
-    #     """
-    #     Ensure feedback submission works even if no talents are selected.
-    #     """
-    #     feedback_data = {
-    #         "name": "Bob",
-    #         "email": "bob@example.com",
-    #         "feedback_type": "quick",
-    #         "category_driving": 4,
-    #         "category_exploring": 4,
-    #         "category_understanding": 4,
-    #         "category_communicating": 4,  # Sum = 16
-    #         "personality_traits": [self.personality1.id],
-    #         "talents": []  # ✅ No talents selected
-    #     }
+    def test_submit_feedback_without_talents(self):
+        """
+        Ensure feedback submission works even if no talents are selected.
+        """
+        feedback_data = {
+            "name": "Bob",
+            "email": "bob@example.com",
+            "feedback_type": "quick",
+            "category_driving": 4,
+            "category_exploring": 4,
+            "category_understanding": 4,
+            "category_communicating": 2,  # Sum = 14
+            "personality_traits": [self.personality1.id],
+            "talents": []  # ✅ No talents selected
+        }
 
-    #     response = self.client.post(f"/api/feedback/submit/{self.invitation.id}/", feedback_data)
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(f"/api/feedback/submit/{self.invitation.id}/", feedback_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    #     # ✅ Ensure feedback was created without talents
-    #     feedback = Feedback.objects.get(invitation=self.invitation)
-    #     self.assertEqual(feedback.talents.count(), 0)  # ✅ Should have no talents linked
+        # ✅ Ensure feedback was created without talents
+        feedback = Feedback.objects.get(invitation=self.invitation)
+        self.assertEqual(feedback.talents.count(), 0)  # ✅ Should have no talents linked

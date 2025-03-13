@@ -16,6 +16,7 @@ class TalentCategory(models.Model):
     """
     Groups talents into categories -- HAS TO BE EXCERPTED TO SEPARATE APP.
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
@@ -25,6 +26,7 @@ class Talent(models.Model):
     """
     Represents an individual talent belonging to a category.
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50, unique=True)
     category = models.ForeignKey(TalentCategory, on_delete=models.CASCADE, related_name="talents")
 
