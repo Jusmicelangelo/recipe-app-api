@@ -28,7 +28,14 @@ class Talent(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=50, unique=True)
-    category = models.ForeignKey(TalentCategory, on_delete=models.CASCADE, related_name="talents")
+    category = models.ForeignKey(
+        "TalentCategory",
+        on_delete=models.CASCADE,
+        to_field="id",
+        related_name="talents",
+        db_column="category_id"
+    )
+
 
     def __str__(self):
         return f"{self.name} ({self.category.name})"

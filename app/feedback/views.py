@@ -81,11 +81,8 @@ def list_talent_categories(request):
 @permission_classes([])
 def get_talent_category(request, category_id):
     """
-    Retrieve a single talent category with its talents.
+    Retrieve all available talent categories with their talents.
     """
-    print(f"Fetching Talent Category ID: {category_id}")  # ✅ Debugging line
-
-    category = get_object_or_404(TalentCategory, id=category_id)
-    serializer = TalentCategorySerializer(category)
-
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    categories = TalentCategory.objects.prefetch_related("talents").all()
+    serializer = TalentCategorySerializer(categories, many=True)
+    return Response(serializer.data)

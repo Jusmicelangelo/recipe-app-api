@@ -267,7 +267,7 @@ class FeedbackTestCase(TestCase):
         """
         Ensure requesting a non-existing talent category returns 404.
         """
-        fake_id = uuid.uuid4()
+        fake_id = "555"
         response = self.client.get(f"/api/feedback/talent_categories/{fake_id}/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
